@@ -58,10 +58,13 @@ JSON_SUCCESS='success'
 JSON_ERROR='error'
 JSON_REASON='reason'
 
+DEFAULT_TIMEOUT=5.0
+
 
 class FanucCGIO(object):
-    def __init__(self, robot_host):
+    def __init__(self, robot_host, timeout=DEFAULT_TIMEOUT):
         self.robot_host = robot_host
+        self._timeout = DEFAULT_TIMEOUT
         self.url = 'http://{ip}/{base}/{prog}'.format(ip=self.robot_host,
             base=BASE_URL, prog=PROG_NAME)
 
@@ -78,7 +81,7 @@ class FanucCGIO(object):
                 raise FanucCGIOException("Need a value to write ..")
             params[ARG_VAL] = port_val
 
-        r = requests.get(self.url, params=params)
+        r = requests.get(self.url, params=params, timeout=self._timeout)
         if r.status_code != requests.codes.ok:
             raise FanucCGIOException("Controller web server returned an "
                 "error: {0}".format())
